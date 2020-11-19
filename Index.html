@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serkan Project </title>
+	<link rel="stylesheet" type="text/css" href="css/Site.css" />
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+    <script src="scripts/modernizr-2.8.3.js"></script>
+    <script src="scripts/jquery-3.4.1.js"></script>
+    <script src="scripts/bootstrap.js"></script>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="Index.html">Home</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+<div class="jumbotron">
+
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <form>
+            <label for="categories">Categories</label>
+            <select id="categories" name="categories">
+                <option data-id="jackets" value="jackets">Jackets</option>
+                <option data-id="shirts" value="shirts">Shirts</option>
+                <option data-id="accessories" value="accessories">Accessories</option>
+            </select>
+            <input type="button" id="fetchBtn" value="Send Query" />
+        </form>
+        <div class="row">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="products">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Product Name</th>
+                            <th>Unit Price</th>
+                            <th>Colors</th>
+                            <th>Manufacturer</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product Name</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list2">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - ASP.NET Uygulamam</p>
+        </footer>
+    </div>
+	    <script>
+        let fetchBtn = document.getElementById("fetchBtn");
+        fetchBtn.addEventListener("click", buttonclickhandler);
+        function buttonclickhandler() {
+            var i = $('#categories').find(':selected').data('id');
+            var link = "https://bad-api-assignment.reaktor.com/products/" + i;
+            var link2 = "https://bad-api-assignment.reaktor.com/availability/reps";
+
+            const xhr = new XMLHttpRequest();
+            const xhr2 = new XMLHttpRequest();
+
+            xhr.open("GET", link, true);
+            xhr2.open("GET", link2, true);
+
+            xhr2.onload = function () {
+                if (this.status === 200) {
+                    obj2 = JSON.parse(this.responseText);
+                    let list2 = document.getElementById("list2");
+                    str2 = '';
+                    obj2.response.forEach((obj) => {
+                        str2 += '<tr><td>' + obj.id + '</td><td>' + obj.DATAPAYLOAD + '</td></tr>';
+                    })
+                    list2.innerHTML = str2;
+                }
+                else {
+                    console.log("not found");
+                }
+            }
+            xhr2.send();
+
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    obj1 = JSON.parse(this.responseText)
+                    str = '';
+                    obj1.forEach((obj) => {
+                        str += '<tr><td>' + obj.id + '</td><td>' + obj.type + '</td><td>' + obj.name + '</td><td>' + obj.price + '</td><td>' + obj.color + '</td><td data-id=' + obj.manufacturer + '>' + obj.manufacturer + '</td></tr>';
+                    })
+                    $("#list").append(str);
+                } else {
+                    console.log('errorr')
+                }
+            }
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
